@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>360</width>
-    <height>428</height>
+    <width>431</width>
+    <height>466</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,17 +18,17 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>130</y>
-      <width>341</width>
-      <height>192</height>
+      <y>140</y>
+      <width>411</width>
+      <height>211</height>
      </rect>
     </property>
    </widget>
    <widget class="QPushButton" name="Add">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>340</y>
+      <x>20</x>
+      <y>360</y>
       <width>83</width>
       <height>29</height>
      </rect>
@@ -41,7 +41,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>100</y>
+      <y>110</y>
       <width>341</width>
       <height>20</height>
      </rect>
@@ -50,13 +50,52 @@
      <string>TextLabel</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="playAndStopSong">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>60</y>
+      <width>55</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>pause</string>
+    </property>
+   </widget>
+   <widget class="QSlider" name="volumeSlider">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>90</y>
+      <width>160</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelVolume">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>70</y>
+      <width>63</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>volume</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>360</width>
+     <width>431</width>
      <height>25</height>
     </rect>
    </property>

@@ -6,6 +6,7 @@
 #include <QDebug> //бібліотека для відладки програми
 #include <QSqlQuery> // бібліотека для запиту до баз даних
 #include <QSqlTableModel> // для відображення таблиць
+#include <QTableView>
 #include <QtSql>
 
 
@@ -13,9 +14,15 @@
 #include <QFileDialog>
 #include <QFileInfo>
 
-//#include <QMediaPlayer>
-//#include <QMediaPlayList>
+#include <QMediaPlayer>
+#include <QAudioOutput>
+#include <QSlider>
 
+//#include <QMediaPlaylist>
+
+
+
+#include<QModelIndex>
 
 
 QT_BEGIN_NAMESPACE
@@ -33,14 +40,27 @@ public:
 private slots:
     void on_Add_clicked();
 
+    void on_tableViewAudio_doubleClicked(const QModelIndex &index);
+
+    void on_pushButton_clicked();
+
+    void playMusic();
+    void stopMusic();
+
+    void on_volumeSlider_sliderMoved(int position);
+
+    void on_volumeSlider_valueChanged(int value);
+
 private:
     Ui::MainWindow *ui;
 
     QSqlDatabase db;
     QSqlQuery *query;
     QSqlTableModel *model;
+    QTableView *viev;
 
-
+    QMediaPlayer *player;
+    QAudioOutput *audioOutput;
 
 };
 #endif // MAINWINDOW_H
