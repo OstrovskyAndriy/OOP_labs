@@ -18,6 +18,7 @@
 #include <QAudioOutput>
 #include <QSlider>
 
+
 //#include <QMediaPlaylist>
 
 

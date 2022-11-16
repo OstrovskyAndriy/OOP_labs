@@ -46,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableViewAudio->hideColumn(0);
     ui->tableViewAudio->hideColumn(1);
     ui->tableViewAudio->setColumnWidth(2,ui->tableViewAudio->width());
+
     qDebug("create table");
 
 
@@ -54,6 +55,7 @@ MainWindow::MainWindow(QWidget *parent)
     //ui->volumeSlider->setOrientation(Qt::Horizontal);
     ui->volumeSlider->setSliderPosition(50);
     ui->volumeSlider->setRange(0,100);
+
 }
 
 MainWindow::~MainWindow()
@@ -97,7 +99,7 @@ void MainWindow::on_Add_clicked()
 
     player->setAudioOutput(audioOutput);
     player->setSource(QUrl::fromLocalFile(file));
-    audioOutput->setVolume(50);
+    //audioOutput->setVolume(50); // воно лишнє шо з ним шо без нього працює
     player->play();
 }
 
@@ -150,4 +152,21 @@ void MainWindow::on_volumeSlider_valueChanged(int value)
 }
 
 
+
+
+void MainWindow::on_tableViewAudio_doubleClicked(const QModelIndex &index)
+{
+    QString url;
+    QString songName;
+
+    url=ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(index.row(),1)).toString();
+    songName =ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(index.row(),2)).toString();
+    ui->song_name->setText(songName);
+
+
+    player->setAudioOutput(audioOutput);
+    player->setSource(QUrl::fromLocalFile(url));
+    //audioOutput->setVolume(100);
+    player->play();
+}
 
