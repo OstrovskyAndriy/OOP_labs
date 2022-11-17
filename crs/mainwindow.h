@@ -19,6 +19,7 @@
 #include <QSlider>
 
 
+
 //#include <QMediaPlaylist>
 
 
@@ -52,6 +53,12 @@ private slots:
 
     void on_volumeSlider_valueChanged(int value);
 
+    void on_nextSong_clicked();
+
+    void on_prevSong_clicked();
+
+    void on_offMusic_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -62,6 +69,11 @@ private:
 
     QMediaPlayer *player;
     QAudioOutput *audioOutput;
+
+
+    QString url;
+    QString songName;
+    int songIndex;
 
 };
 #endif // MAINWINDOW_H

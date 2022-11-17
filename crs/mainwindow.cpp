@@ -47,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableViewAudio->hideColumn(1);
     ui->tableViewAudio->setColumnWidth(2,ui->tableViewAudio->width());
 
+
     qDebug("create table");
 
 
@@ -101,13 +102,15 @@ void MainWindow::on_Add_clicked()
     player->setSource(QUrl::fromLocalFile(file));
     //audioOutput->setVolume(50); // воно лишнє шо з ним шо без нього працює
     player->play();
+
+
 }
 
 
 
 void MainWindow::playMusic()
 {
-    ui->playAndStopSong->setText("Stop");
+    ui->playAndStopSong->setText("Pause");
     player->play();
 
     connect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::stopMusic);
@@ -135,6 +138,7 @@ void MainWindow::on_volumeSlider_sliderMoved(int position)
     qDebug()<<pos;
     audioOutput->setVolume(ui->volumeSlider->value());
 
+
 }
 
 
@@ -156,11 +160,13 @@ void MainWindow::on_volumeSlider_valueChanged(int value)
 
 void MainWindow::on_tableViewAudio_doubleClicked(const QModelIndex &index)
 {
-    QString url;
-    QString songName;
+   // QString url;
+    //QString songName;
 
     url=ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(index.row(),1)).toString();
     songName =ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(index.row(),2)).toString();
+
+    songIndex = index.row();
     ui->song_name->setText(songName);
 
 
@@ -168,5 +174,50 @@ void MainWindow::on_tableViewAudio_doubleClicked(const QModelIndex &index)
     player->setSource(QUrl::fromLocalFile(url));
     //audioOutput->setVolume(100);
     player->play();
+}
+
+
+
+
+void MainWindow::on_nextSong_clicked()
+{
+    songIndex++;
+
+    if(songIndex==ui->tableViewAudio->model()->rowCount()){
+        songIndex=0;
+    }
+
+    url=ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(songIndex,1)).toString();
+    songName =ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(songIndex,2)).toString();
+    ui->song_name->setText(songName);
+
+    player->setAudioOutput(audioOutput);
+    player->setSource(QUrl::fromLocalFile(url));
+    player->play();
+}
+
+
+void MainWindow::on_prevSong_clicked()
+{
+    if(songIndex==0){
+        songIndex=ui->tableViewAudio->model()->rowCount();
+    }
+    songIndex--;
+
+
+    url=ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(songIndex,1)).toString();
+    songName =ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(songIndex,2)).toString();
+    ui->song_name->setText(songName);
+
+
+    player->setAudioOutput(audioOutput);
+    player->setSource(QUrl::fromLocalFile(url));
+    player->play();
+}
+
+
+void MainWindow::on_offMusic_clicked()
+{
+    player->stop();
 }
 
