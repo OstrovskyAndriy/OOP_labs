@@ -12,8 +12,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->playAndStopSong, &QPushButton::clicked,this, &MainWindow::stopMusic);
 
 
-
-
     db=QSqlDatabase::addDatabase("QSQLITE"); // драйвер sqlite
     db.setDatabaseName("./audioDB.sqlite"); // добавити базу даних в папку проекту
 
@@ -103,6 +101,7 @@ void MainWindow::on_Add_clicked()
     //audioOutput->setVolume(50); // воно лишнє шо з ним шо без нього працює
     player->play();
 
+    songIndex=ui->tableViewAudio->model()->columnCount();
 
 }
 
@@ -220,4 +219,7 @@ void MainWindow::on_offMusic_clicked()
 {
     player->stop();
 }
+
+
+
 
