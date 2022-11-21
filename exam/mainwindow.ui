@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>806</width>
+    <height>665</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QTableView" name="tableStudents">
+    <property name="geometry">
+     <rect>
+      <x>15</x>
+      <y>21</y>
+      <width>771</width>
+      <height>301</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="nameLable">
+    <property name="geometry">
+     <rect>
+      <x>21</x>
+      <y>341</y>
+      <width>26</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Ім'я</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gradebookLable">
+    <property name="geometry">
+     <rect>
+      <x>21</x>
+      <y>414</y>
+      <width>67</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Заліковка</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ageLable">
+    <property name="geometry">
+     <rect>
+      <x>21</x>
+      <y>378</y>
+      <width>20</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Вік</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="groupLable">
+    <property name="geometry">
+     <rect>
+      <x>21</x>
+      <y>451</y>
+      <width>40</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Група</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="oopLable">
+    <property name="geometry">
+     <rect>
+      <x>21</x>
+      <y>487</y>
+      <width>33</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>ООП</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="englLable">
+    <property name="geometry">
+     <rect>
+      <x>21</x>
+      <y>524</y>
+      <width>33</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Англ</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="dbLable">
+    <property name="geometry">
+     <rect>
+      <x>21</x>
+      <y>560</y>
+      <width>19</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>БД</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="name">
+    <property name="geometry">
+     <rect>
+      <x>96</x>
+      <y>341</y>
+      <width>125</width>
+      <height>28</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="age">
+    <property name="geometry">
+     <rect>
+      <x>96</x>
+      <y>376</y>
+      <width>125</width>
+      <height>28</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="gradebook">
+    <property name="geometry">
+     <rect>
+      <x>96</x>
+      <y>414</y>
+      <width>125</width>
+      <height>28</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="group">
+    <property name="geometry">
+     <rect>
+      <x>96</x>
+      <y>454</y>
+      <width>125</width>
+      <height>28</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="oop">
+    <property name="geometry">
+     <rect>
+      <x>96</x>
+      <y>492</y>
+      <width>125</width>
+      <height>28</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="engl">
+    <property name="geometry">
+     <rect>
+      <x>96</x>
+      <y>527</y>
+      <width>125</width>
+      <height>28</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="db">
+    <property name="geometry">
+     <rect>
+      <x>96</x>
+      <y>562</y>
+      <width>125</width>
+      <height>28</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="add">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>560</y>
+      <width>83</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Добавити</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="delete_2">
+    <property name="geometry">
+     <rect>
+      <x>650</x>
+      <y>450</y>
+      <width>83</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Видалити</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>806</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
