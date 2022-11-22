@@ -19,6 +19,9 @@
 #include <QAudioOutput>
 #include <QSlider>
 
+#include <QFile>
+#include <QDir>
+
 
 
 //#include <QMediaPlaylist>

@@ -104,6 +104,16 @@ void MainWindow::on_Add_clicked()
         //audioOutput->setVolume(50); // воно лишнє шо з ним шо без нього працює
         player->play();
 
+
+        if(QDir("music").exists()){     //перевіряю чи є папка musiс, якщо є то копіюю файл
+            QFile::copy(file,"./music/"+fileName);
+        }
+        else{
+            QDir().mkdir("music"); //інше створюю папку і копіюю файл
+            QFile::copy(file,"./music/"+fileName);
+
+        }
+
     }
     songIndex=ui->tableViewAudio->model()->columnCount();
 
