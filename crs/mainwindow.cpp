@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->playAndStopSong, &QPushButton::clicked,this, &MainWindow::stopMusic);
 
 
+
     db=QSqlDatabase::addDatabase("QSQLITE"); // драйвер sqlite
     db.setDatabaseName("./audioDB.sqlite"); // добавити базу даних в папку проекту
 
@@ -51,7 +52,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     player = new QMediaPlayer(this);
     audioOutput = new QAudioOutput;
-    //ui->volumeSlider->setOrientation(Qt::Horizontal);
+
     ui->volumeSlider->setSliderPosition(50);
     ui->volumeSlider->setRange(0,100);
 
@@ -63,6 +64,7 @@ MainWindow::~MainWindow()
     delete model;
     delete query;
     delete player;
+    delete viev;
 }
 
 
@@ -89,22 +91,29 @@ void MainWindow::on_Add_clicked()
         qDebug("error entering data");
     }
 
-    model->select();
+    else{
+        model->select();
 
-    ui->tableViewAudio->setModel(model);
-    ui->tableViewAudio->hideColumn(0);
-    ui->tableViewAudio->hideColumn(1);
-    ui->tableViewAudio->setColumnWidth(2,ui->tableViewAudio->width());
+        ui->tableViewAudio->setModel(model);
+        ui->tableViewAudio->hideColumn(0);
+        ui->tableViewAudio->hideColumn(1);
+        ui->tableViewAudio->setColumnWidth(2,ui->tableViewAudio->width());
 
-    player->setAudioOutput(audioOutput);
-    player->setSource(QUrl::fromLocalFile(file));
-    //audioOutput->setVolume(50); // воно лишнє шо з ним шо без нього працює
-    player->play();
+        player->setAudioOutput(audioOutput);
+        player->setSource(QUrl::fromLocalFile(file));
+        //audioOutput->setVolume(50); // воно лишнє шо з ним шо без нього працює
+        player->play();
 
+    }
     songIndex=ui->tableViewAudio->model()->columnCount();
 
-}
 
+
+    ui->playAndStopSong->setText("Pause");
+    // дві наступні стрічки коду для того щоб не був баг, коли музика на паузі і додаєм музику
+    connect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::stopMusic);
+    disconnect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::playMusic);
+}
 
 
 void MainWindow::playMusic()
@@ -128,40 +137,30 @@ void MainWindow::stopMusic()
 
 
 
-
-
-
-void MainWindow::on_volumeSlider_sliderMoved(int position)
+void MainWindow::on_volumeSlider_sliderMoved(int position)  // виконуєтсья лише коли регулятор пересувати
 {
-    int pos=ui->volumeSlider->sliderPosition();
-    qDebug()<<pos;
-    audioOutput->setVolume(ui->volumeSlider->value());
-
-
+    qDebug()<<ui->volumeSlider->sliderPosition();
+    qreal linearVolume =  QAudio::convertVolume(ui->volumeSlider->value() / qreal(100),
+                                                QAudio::LogarithmicVolumeScale,
+                                                QAudio::LinearVolumeScale);
+    audioOutput->setVolume(linearVolume);
 }
 
 
-
-
-
-void MainWindow::on_volumeSlider_valueChanged(int value)
+void MainWindow::on_volumeSlider_valueChanged(int value) // виконуєтсья лише коли клацнути по регулятору гучності
 {
-    int pos=ui->volumeSlider->sliderPosition();
-    qDebug()<<pos;
+    qDebug()<<ui->volumeSlider->sliderPosition();
 
-    audioOutput->setVolume(ui->volumeSlider->value());
-
+    qreal linearVolume =  QAudio::convertVolume(ui->volumeSlider->value() / qreal(100),
+                                                QAudio::LogarithmicVolumeScale,
+                                                QAudio::LinearVolumeScale);
+    audioOutput->setVolume(linearVolume);
 
 }
-
-
 
 
 void MainWindow::on_tableViewAudio_doubleClicked(const QModelIndex &index)
 {
-   // QString url;
-    //QString songName;
-
     url=ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(index.row(),1)).toString();
     songName =ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(index.row(),2)).toString();
 
@@ -171,8 +170,12 @@ void MainWindow::on_tableViewAudio_doubleClicked(const QModelIndex &index)
 
     player->setAudioOutput(audioOutput);
     player->setSource(QUrl::fromLocalFile(url));
-    //audioOutput->setVolume(100);
     player->play();
+
+    // дві наступні стрічки коду для того щоб не був баг, коли музика на паузі і даблклікаєм іншу музику
+    connect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::stopMusic);
+    ui->playAndStopSong->setText("Pause");
+    disconnect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::playMusic);
 }
 
 
@@ -222,4 +225,10 @@ void MainWindow::on_offMusic_clicked()
 
 
 
+
+
+void MainWindow::on_closeWindow_clicked()
+{
+    QApplication::exit();
+}
 

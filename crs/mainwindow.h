@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+
 #include <QSqlDatabase> // бібліотека бази даних
 #include <QDebug> //бібліотека для відладки програми
 #include <QSqlQuery> // бібліотека для запиту до баз даних
@@ -39,6 +40,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+
 private slots:
     void on_Add_clicked();
 
@@ -49,6 +51,7 @@ private slots:
     void playMusic();
     void stopMusic();
 
+
     void on_volumeSlider_sliderMoved(int position);
 
     void on_volumeSlider_valueChanged(int value);
@@ -58,6 +61,8 @@ private slots:
     void on_prevSong_clicked();
 
     void on_offMusic_clicked();
+
+    void on_closeWindow_clicked();
 
 private:
     Ui::MainWindow *ui;
