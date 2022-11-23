@@ -27,9 +27,9 @@
    <widget class="QPushButton" name="Add">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>22</x>
       <y>360</y>
-      <width>83</width>
+      <width>81</width>
       <height>29</height>
      </rect>
     </property>
@@ -139,6 +139,19 @@
     </property>
     <property name="text">
      <string>Close</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="deleteButton">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>360</y>
+      <width>71</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Remove</string>
     </property>
    </widget>
   </widget>

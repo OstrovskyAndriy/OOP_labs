@@ -40,12 +40,7 @@ MainWindow::MainWindow(QWidget *parent)
     model =new QSqlTableModel(this,db);
     model->setTable("audioList");
 
-    model->select();
-    ui->tableViewAudio->setModel(model);
-    ui->tableViewAudio->hideColumn(0);
-    ui->tableViewAudio->hideColumn(1);
-    ui->tableViewAudio->setColumnWidth(2,ui->tableViewAudio->width());
-
+    vievOfTable();
 
     qDebug("create table");
 
@@ -92,12 +87,8 @@ void MainWindow::on_Add_clicked()
     }
 
     else{
-        model->select();
 
-        ui->tableViewAudio->setModel(model);
-        ui->tableViewAudio->hideColumn(0);
-        ui->tableViewAudio->hideColumn(1);
-        ui->tableViewAudio->setColumnWidth(2,ui->tableViewAudio->width());
+        vievOfTable();
 
         player->setAudioOutput(audioOutput);
         player->setSource(QUrl::fromLocalFile(file));
@@ -240,5 +231,34 @@ void MainWindow::on_offMusic_clicked()
 void MainWindow::on_closeWindow_clicked()
 {
     QApplication::exit();
+}
+
+
+void MainWindow::on_tableViewAudio_clicked(const QModelIndex &index)
+{
+    rowToDelete=index.row();
+}
+
+
+void MainWindow::on_deleteButton_clicked()
+{
+    ui->tableViewAudio->model()->removeRow(rowToDelete);
+    vievOfTable();
+
+    qDebug()<<songIndex;
+    qDebug()<<rowToDelete;
+
+    if(songIndex==rowToDelete){
+        player->stop();
+    }
+}
+
+void MainWindow::vievOfTable()
+{
+    model->select();
+    ui->tableViewAudio->setModel(model);
+    ui->tableViewAudio->hideColumn(0);
+    ui->tableViewAudio->hideColumn(1);
+    ui->tableViewAudio->setColumnWidth(2,ui->tableViewAudio->width());
 }
 

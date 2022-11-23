@@ -67,6 +67,12 @@ private slots:
 
     void on_closeWindow_clicked();
 
+    void on_tableViewAudio_clicked(const QModelIndex &index);
+
+    void on_deleteButton_clicked();
+
+    void vievOfTable();
+
 private:
     Ui::MainWindow *ui;
 
@@ -82,6 +88,6 @@ private:
     QString url;
     QString songName;
     int songIndex;
-
+    int rowToDelete;
 };
 #endif // MAINWINDOW_H
