@@ -59,7 +59,7 @@ MainWindow::~MainWindow()
     delete model;
     delete query;
     delete player;
-    delete viev;
+    //delete viev;
 }
 
 
@@ -71,33 +71,16 @@ void MainWindow::on_Add_clicked()
 
     QFileInfo info(file);
     QString fileName = info.fileName(); //отримати назву файлу
+    QString newFilePath;
 
     ui->song_name->setText(fileName);
-
-    query->prepare("INSERT INTO audioList("
-                   "path, "
-                   "song_name)"
-                   "VALUES(?,?);");
-
-    query->addBindValue(file);
-    query->addBindValue(fileName);
-
-    if(!query->exec()){
-        qDebug("error entering data");
-    }
-
-    else{
-
-        vievOfTable();
-
-        player->setAudioOutput(audioOutput);
-        player->setSource(QUrl::fromLocalFile(file));
-        //audioOutput->setVolume(50); // воно лишнє шо з ним шо без нього працює
-        player->play();
 
 
         if(QDir("music").exists()){     //перевіряю чи є папка musiс, якщо є то копіюю файл
             QFile::copy(file,"./music/"+fileName);
+
+             newFilePath=QFileInfo("./music/"+fileName).absoluteFilePath();
+
         }
         else{
             QDir().mkdir("music"); //інше створюю папку і копіюю файл
@@ -105,13 +88,35 @@ void MainWindow::on_Add_clicked()
 
         }
 
-    }
+        query->prepare("INSERT INTO audioList("
+                       "path, "
+                       "song_name)"
+                       "VALUES(?,?);");
+
+        query->addBindValue(newFilePath);
+        query->addBindValue(fileName);
+
+        if(!query->exec()){
+            //qDebug("error entering data");
+            errorMsg.setText("Error entering data");
+            errorMsg.exec();
+
+        }
+
+        else{
+            player->setAudioOutput(audioOutput);
+            player->setSource(QUrl::fromLocalFile(file));
+            player->play();
+        }
+        vievOfTable();
+
     songIndex=ui->tableViewAudio->model()->columnCount();
 
 
 
     ui->playAndStopSong->setText("Pause");
     // дві наступні стрічки коду для того щоб не був баг, коли музика на паузі і додаєм музику
+
     connect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::stopMusic);
     disconnect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::playMusic);
 }
@@ -138,9 +143,9 @@ void MainWindow::stopMusic()
 
 
 
-void MainWindow::on_volumeSlider_sliderMoved(int position)  // виконуєтсья лише коли регулятор пересувати
+void MainWindow::on_volumeSlider_sliderMoved()  // виконуєтсья лише коли регулятор пересувати
 {
-    qDebug()<<ui->volumeSlider->sliderPosition();
+    //qDebug()<<ui->volumeSlider->sliderPosition();
     qreal linearVolume =  QAudio::convertVolume(ui->volumeSlider->value() / qreal(100),
                                                 QAudio::LogarithmicVolumeScale,
                                                 QAudio::LinearVolumeScale);
@@ -148,9 +153,9 @@ void MainWindow::on_volumeSlider_sliderMoved(int position)  // виконуєт�
 }
 
 
-void MainWindow::on_volumeSlider_valueChanged(int value) // виконуєтсья лише коли клацнути по регулятору гучності
+void MainWindow::on_volumeSlider_valueChanged() // виконуєтсья лише коли клацнути по регулятору гучності
 {
-    qDebug()<<ui->volumeSlider->sliderPosition();
+    //qDebug()<<ui->volumeSlider->sliderPosition();
 
     qreal linearVolume =  QAudio::convertVolume(ui->volumeSlider->value() / qreal(100),
                                                 QAudio::LogarithmicVolumeScale,
@@ -164,14 +169,27 @@ void MainWindow::on_tableViewAudio_doubleClicked(const QModelIndex &index)
 {
     url=ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(index.row(),1)).toString();
     songName =ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(index.row(),2)).toString();
-
     songIndex = index.row();
-    ui->song_name->setText(songName);
 
+    //перевірка чи файл дійсний
+    //якщо не дійсний то видалити з бази даних
+    if(!QFile(url).exists()){
+        ui->tableViewAudio->model()->removeRow(songIndex);
+        vievOfTable();
 
-    player->setAudioOutput(audioOutput);
-    player->setSource(QUrl::fromLocalFile(url));
-    player->play();
+        //Вивести про це помилку
+        //QMessageBox errorMsg;
+        errorMsg.setText(songName+" not found");
+        errorMsg.exec();
+    }
+
+    else{
+        //в іншому випадку включити музику
+        ui->song_name->setText(songName);
+        player->setAudioOutput(audioOutput);
+        player->setSource(QUrl::fromLocalFile(url));
+        player->play();
+    }
 
     // дві наступні стрічки коду для того щоб не був баг, коли музика на паузі і даблклікаєм іншу музику
     connect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::stopMusic);
@@ -197,6 +215,10 @@ void MainWindow::on_nextSong_clicked()
     player->setAudioOutput(audioOutput);
     player->setSource(QUrl::fromLocalFile(url));
     player->play();
+
+    ui->playAndStopSong->setText("Pause");
+    connect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::stopMusic);
+    disconnect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::playMusic);
 }
 
 
@@ -216,6 +238,10 @@ void MainWindow::on_prevSong_clicked()
     player->setAudioOutput(audioOutput);
     player->setSource(QUrl::fromLocalFile(url));
     player->play();
+
+    ui->playAndStopSong->setText("Pause");
+    connect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::stopMusic);
+    disconnect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::playMusic);
 }
 
 
@@ -256,9 +282,20 @@ void MainWindow::on_deleteButton_clicked()
 void MainWindow::vievOfTable()
 {
     model->select();
+
     ui->tableViewAudio->setModel(model);
     ui->tableViewAudio->hideColumn(0);
     ui->tableViewAudio->hideColumn(1);
     ui->tableViewAudio->setColumnWidth(2,ui->tableViewAudio->width());
 }
+
+void MainWindow::changeStateOfPauseButton()
+{
+    ui->playAndStopSong->setText("Pause");
+    // дві наступні стрічки коду для того щоб не був баг, коли музика на паузі і додаєм музику
+    connect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::stopMusic);
+    disconnect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::playMusic);
+}
+
+
 

@@ -154,6 +154,19 @@
      <string>Remove</string>
     </property>
    </widget>
+   <widget class="QSlider" name="slderOfMusicTime">
+    <property name="geometry">
+     <rect>
+      <x>19</x>
+      <y>80</y>
+      <width>321</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

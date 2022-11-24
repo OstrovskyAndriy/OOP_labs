@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMessageBox>
 
 #include <QSqlDatabase> // бібліотека бази даних
 #include <QDebug> //бібліотека для відладки програми
@@ -55,9 +56,9 @@ private slots:
     void stopMusic();
 
 
-    void on_volumeSlider_sliderMoved(int position);
+    void on_volumeSlider_sliderMoved();
 
-    void on_volumeSlider_valueChanged(int value);
+    void on_volumeSlider_valueChanged();
 
     void on_nextSong_clicked();
 
@@ -72,6 +73,7 @@ private slots:
     void on_deleteButton_clicked();
 
     void vievOfTable();
+    void changeStateOfPauseButton();
 
 private:
     Ui::MainWindow *ui;
@@ -79,7 +81,7 @@ private:
     QSqlDatabase db;
     QSqlQuery *query;
     QSqlTableModel *model;
-    QTableView *viev;
+    //QTableView *viev;
 
     QMediaPlayer *player;
     QAudioOutput *audioOutput;
@@ -87,6 +89,7 @@ private:
 
     QString url;
     QString songName;
+    QMessageBox errorMsg;
     int songIndex;
     int rowToDelete;
 };
