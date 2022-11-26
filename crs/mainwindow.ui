@@ -154,7 +154,7 @@
      <string>Remove</string>
     </property>
    </widget>
-   <widget class="QSlider" name="slderOfMusicTime">
+   <widget class="QSlider" name="musicSlider">
     <property name="geometry">
      <rect>
       <x>19</x>

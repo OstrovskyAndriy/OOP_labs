@@ -48,9 +48,12 @@ MainWindow::MainWindow(QWidget *parent)
     player = new QMediaPlayer(this);
     audioOutput = new QAudioOutput;
 
+    //регулювання гучності
     ui->volumeSlider->setSliderPosition(50);
     ui->volumeSlider->setRange(0,100);
 
+
+    //перемотування музики
 }
 
 MainWindow::~MainWindow()
@@ -74,6 +77,7 @@ void MainWindow::on_Add_clicked()
     QString newFilePath;
 
     ui->song_name->setText(fileName);
+
 
 
         if(QDir("music").exists()){     //перевіряю чи є папка musiс, якщо є то копіюю файл
@@ -105,7 +109,12 @@ void MainWindow::on_Add_clicked()
 
         else{
             player->setAudioOutput(audioOutput);
-            player->setSource(QUrl::fromLocalFile(file));
+            player->setSource(QUrl::fromLocalFile(newFilePath));
+
+            //нууу час я отримав але не так як треба спершу повертає 0 і на наступний раз вже довжину
+            /*QTime time=QTime::fromMSecsSinceStartOfDay(player->duration());
+            qDebug()<<time.toString("mm:ss");*/
+
             player->play();
         }
         vievOfTable();
@@ -119,6 +128,7 @@ void MainWindow::on_Add_clicked()
 
     connect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::stopMusic);
     disconnect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::playMusic);
+
 
 
 }
@@ -147,17 +157,17 @@ void MainWindow::stopMusic()
 
 void MainWindow::on_volumeSlider_sliderMoved()  // виконуєтсья лише коли регулятор пересувати
 {
-    //qDebug()<<ui->volumeSlider->sliderPosition();
     qreal linearVolume =  QAudio::convertVolume(ui->volumeSlider->value() / qreal(100),
                                                 QAudio::LogarithmicVolumeScale,
                                                 QAudio::LinearVolumeScale);
     audioOutput->setVolume(linearVolume);
+
+
 }
 
 
 void MainWindow::on_volumeSlider_valueChanged() // виконуєтсья лише коли клацнути по регулятору гучності
 {
-    //qDebug()<<ui->volumeSlider->sliderPosition();
 
     qreal linearVolume =  QAudio::convertVolume(ui->volumeSlider->value() / qreal(100),
                                                 QAudio::LogarithmicVolumeScale,
@@ -222,7 +232,6 @@ void MainWindow::on_nextSong_clicked()
     connect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::stopMusic);
     disconnect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::playMusic);
 
-    //ui->songTime->setText(player->duration());
 }
 
 
@@ -293,6 +302,7 @@ void MainWindow::vievOfTable()
     ui->tableViewAudio->setColumnWidth(2,ui->tableViewAudio->width());
 }
 
+// не дороблено
 void MainWindow::changeStateOfPauseButton()
 {
     ui->playAndStopSong->setText("Pause");
@@ -302,4 +312,15 @@ void MainWindow::changeStateOfPauseButton()
 }
 
 
+
+
+
+
+
+
+
+void MainWindow::on_musicSlider_sliderMoved(int position)
+{
+
+}
 

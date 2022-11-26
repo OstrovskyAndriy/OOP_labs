@@ -23,6 +23,7 @@
 #include <QFile>
 #include <QDir>
 
+#include <QTime>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -66,6 +67,12 @@ private slots:
 
     void vievOfTable();
     void changeStateOfPauseButton();
+
+    void on_slderOfMusicTime_sliderMoved(int position);
+
+    void on_sliderOfMusicTime_sliderMoved(int position);
+
+    void on_musicSlider_sliderMoved(int position);
 
 private:
     Ui::MainWindow *ui;
