@@ -119,6 +119,8 @@ void MainWindow::on_Add_clicked()
 
     connect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::stopMusic);
     disconnect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::playMusic);
+
+
 }
 
 
@@ -219,6 +221,8 @@ void MainWindow::on_nextSong_clicked()
     ui->playAndStopSong->setText("Pause");
     connect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::stopMusic);
     disconnect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::playMusic);
+
+    //ui->songTime->setText(player->duration());
 }
 
 
