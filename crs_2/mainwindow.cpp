@@ -14,6 +14,8 @@ MainWindow::MainWindow(QWidget *parent)
     //connect(player, &QMediaPlayer::durationChanged, this, &MainWindow::durationChanged);
 
 
+    //connect(ui->musicSlider,&QMediaPlayer::positionChanged,this,&QSlider::setSliderPosition);
+    //connect(player,&QMediaPlayer::positionChanged,this,&MainWindow::setSliderPosition);
 
 
 
@@ -347,6 +349,11 @@ void MainWindow::seek(int mseconds)
 {
     player->setPosition(mseconds);
     positionChanged(mseconds);
+}
+
+void MainWindow::setSliderPosition(qint64 position)
+{
+    ui->musicSlider->setSliderPosition(position);
 }
 
 

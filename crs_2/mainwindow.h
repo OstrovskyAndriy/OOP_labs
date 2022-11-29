@@ -69,7 +69,7 @@ private slots:
     void vievOfTable();
     void changeStateOfPauseButton();
 
-    void on_slderOfMusicTime_sliderMoved(int position);
+    //void on_slderOfMusicTime_sliderMoved(int position);
 
     void on_sliderOfMusicTime_sliderMoved(int position);
 
@@ -80,7 +80,7 @@ private slots:
      void positionChanged(qint64 progress);
      void seek(int mseconds);
 
-
+    void setSliderPosition(qint64 position);
 
 
 private:
