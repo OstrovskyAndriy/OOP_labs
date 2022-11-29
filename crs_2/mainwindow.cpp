@@ -6,17 +6,11 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
+    ui->tableViewAudio->setSelectionMode(QAbstractItemView::NoSelection);
+    ui->tableViewAudio->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     connect(ui->playAndStopSong, &QPushButton::clicked,this, &MainWindow::playMusic);
-    connect(ui->playAndStopSong, &QPushButton::clicked,this, &MainWindow::stopMusic);
     connect(ui->musicSlider, &QSlider::sliderMoved, this, &MainWindow::seek);
-    //connect(player, &QMediaPlayer::durationChanged, this, &MainWindow::durationChanged);
-
-
-    //connect(ui->musicSlider,&QMediaPlayer::positionChanged,this,&QSlider::setSliderPosition);
-    //connect(player,&QMediaPlayer::positionChanged,this,&MainWindow::setSliderPosition);
-
 
 
     db=QSqlDatabase::addDatabase("QSQLITE"); // драйвер sqlite
@@ -54,14 +48,12 @@ MainWindow::MainWindow(QWidget *parent)
     player = new QMediaPlayer(this);
     audioOutput = new QAudioOutput;
 
+    connect(player,&QMediaPlayer::positionChanged,this,&MainWindow::onPositionChanged);
+
     //регулювання гучності
     ui->volumeSlider->setSliderPosition(50);
     ui->volumeSlider->setRange(0,100);
-
-
-
-    //перемотування музики
-    ui->musicSlider->setRange(0,player->duration());
+    ui->songTime->setText("");
 
 }
 
@@ -90,44 +82,44 @@ void MainWindow::on_Add_clicked()
 
 
 
-        if(QDir("music").exists()){     //перевіряю чи є папка musiс, якщо є то копіюю файл
-            QFile::copy(file,"./music/"+fileName);
+    if(QDir("music").exists()){     //перевіряю чи є папка musiс, якщо є то копіюю файл
+        QFile::copy(file,"./music/"+fileName);
 
-             newFilePath=QFileInfo("./music/"+fileName).absoluteFilePath();
+        newFilePath=QFileInfo("./music/"+fileName).absoluteFilePath();
 
-        }
-        else{
-            QDir().mkdir("music"); //інше створюю папку і копіюю файл
-            QFile::copy(file,"./music/"+fileName);
+    }
+    else{
+        QDir().mkdir("music"); //інше створюю папку і копіюю файл
+        QFile::copy(file,"./music/"+fileName);
 
-        }
+    }
 
-        query->prepare("INSERT INTO audioList("
-                       "path, "
-                       "song_name)"
-                       "VALUES(?,?);");
+    query->prepare("INSERT INTO audioList("
+                   "path, "
+                   "song_name)"
+                   "VALUES(?,?);");
 
-        query->addBindValue(newFilePath);
-        query->addBindValue(fileName);
+    query->addBindValue(newFilePath);
+    query->addBindValue(fileName);
 
-        if(!query->exec()){
-            //qDebug("error entering data");
-            errorMsg.setText("Error entering data");
-            errorMsg.exec();
+    if(!query->exec()){
+        //qDebug("error entering data");
+        errorMsg.setText("Error entering data");
+        errorMsg.exec();
 
-        }
+    }
 
-        else{
-            player->setAudioOutput(audioOutput);
-            player->setSource(QUrl::fromLocalFile(newFilePath));
+    else{
+        player->setAudioOutput(audioOutput);
+        player->setSource(QUrl::fromLocalFile(newFilePath));
 
-            //нууу час я отримав але не так як треба спершу повертає 0 і на наступний раз вже довжину
-            /*QTime time=QTime::fromMSecsSinceStartOfDay(player->duration());
+        //нууу час я отримав але не так як треба спершу повертає 0 і на наступний раз вже довжину
+        /*QTime time=QTime::fromMSecsSinceStartOfDay(player->duration());
             qDebug()<<time.toString("mm:ss");*/
 
-            player->play();
-        }
-        vievOfTable();
+        player->play();
+    }
+    vievOfTable();
 
     songIndex=ui->tableViewAudio->model()->columnCount();
 
@@ -139,6 +131,7 @@ void MainWindow::on_Add_clicked()
     connect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::stopMusic);
     disconnect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::playMusic);
 
+    //ui->musicSlider->setRange(0,player->duration());
 
 
 }
@@ -146,6 +139,9 @@ void MainWindow::on_Add_clicked()
 
 void MainWindow::playMusic()
 {
+    //перемотування музики
+    ui->musicSlider->setRange(0,player->duration());
+
     ui->playAndStopSong->setText("Pause");
     player->play();
 
@@ -211,17 +207,19 @@ void MainWindow::on_tableViewAudio_doubleClicked(const QModelIndex &index)
         ui->song_name->setText(songName);
         player->setAudioOutput(audioOutput);
         player->setSource(QUrl::fromLocalFile(url));
-        player->play();
+
+        this->playMusic();
+//        player->play();
+
+        //    // дві наступні стрічки коду для того щоб не був баг, коли музика на паузі і даблклікаєм іншу музику
+        //    connect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::stopMusic);
+        //    ui->playAndStopSong->setText("Pause");
+        //    disconnect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::playMusic);
+
+
+
+        //    ui->musicSlider->setRange(0,player->duration());
     }
-
-    // дві наступні стрічки коду для того щоб не був баг, коли музика на паузі і даблклікаєм іншу музику
-    connect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::stopMusic);
-    ui->playAndStopSong->setText("Pause");
-    disconnect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::playMusic);
-
-
-
-    ui->musicSlider->setRange(0,player->duration());
 
 }
 
@@ -300,8 +298,8 @@ void MainWindow::on_deleteButton_clicked()
     ui->tableViewAudio->model()->removeRow(rowToDelete);
     vievOfTable();
 
-    qDebug()<<songIndex;
-    qDebug()<<rowToDelete;
+    //qDebug()<<songIndex;
+    //qDebug()<<rowToDelete;
 
     if(songIndex==rowToDelete){
         player->stop();
@@ -331,39 +329,28 @@ void MainWindow::changeStateOfPauseButton()
 
 
 
-
-
-
-
-/*void MainWindow::on_musicSlider_sliderMoved(qint64 position)
-{
-
-    durationChanged(position);
-    positionChanged(position);
-
-    seek(position);
-}*/
-
-
 void MainWindow::seek(int mseconds)
 {
     player->setPosition(mseconds);
-    positionChanged(mseconds);
 }
+
+
 
 void MainWindow::setSliderPosition(qint64 position)
 {
-    ui->musicSlider->setSliderPosition(position);
+    qDebug()<< position;
+    //ui->musicSlider->setSliderPosition(position);
 }
 
 
-void MainWindow::durationChanged(qint64 duration)
+
+void MainWindow::onDurationChanged(qint64 duration)
 {
     m_duration = duration / 1000;
     ui->musicSlider->setMaximum(duration);
 }
 
-void MainWindow::positionChanged(qint64 progress)
+void MainWindow::onPositionChanged(qint64 progress)
 {
     if (!ui->musicSlider->isSliderDown())
         ui->musicSlider->setValue(progress);
@@ -377,6 +364,23 @@ void MainWindow::positionChanged(qint64 progress)
 
 void MainWindow::updateDurationInfo(qint64 currentInfo)
 {
+//    QString tStr;
+//    if (currentInfo || m_duration) {
+//        QTime currentTime((currentInfo / 3600) % 60, (currentInfo / 60) % 60,
+//                          currentInfo % 60, (currentInfo * 1000) % 1000);
+//        QTime totalTime((m_duration / 3600) % 60, (m_duration / 60) % 60,
+//                        m_duration % 60, (m_duration * 1000) % 1000);
+//        QString format = "mm:ss";
+////        if (m_duration > 3600)
+////            format = "mm:ss";
+
+//        QTime time=QTime::fromMSecsSinceStartOfDay(player->duration());
+//        //qDebug()<<time.toString("mm:ss");
+
+//        tStr = currentTime.toString(format) + " / " + totalTime.toString(time.toString("mm:ss"));
+//    }
+//    ui->songTime->setText(tStr);
+
     QString tStr;
     if (currentInfo || m_duration) {
         QTime currentTime((currentInfo / 3600) % 60, (currentInfo / 60) % 60,
@@ -384,14 +388,15 @@ void MainWindow::updateDurationInfo(qint64 currentInfo)
         QTime totalTime((m_duration / 3600) % 60, (m_duration / 60) % 60,
             m_duration % 60, (m_duration * 1000) % 1000);
         QString format = "mm:ss";
-        if (m_duration > 3600)
-            format = "mm:ss";
+        //if (m_duration > 3600)
+          //  format = "hh:mm:ss";
 
         QTime time=QTime::fromMSecsSinceStartOfDay(player->duration());
-        //qDebug()<<time.toString("mm:ss");
+        //        //qDebug()<<time.toString("mm:ss");
 
         tStr = currentTime.toString(format) + " / " + totalTime.toString(time.toString("mm:ss"));
     }
-   ui->songTime->setText(tStr);
+    ui->songTime->setText(tStr);
+
 }
 

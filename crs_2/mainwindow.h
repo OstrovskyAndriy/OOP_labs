@@ -44,7 +44,7 @@ private slots:
 
     void on_tableViewAudio_doubleClicked(const QModelIndex &index);
 
-    void on_pushButton_clicked();
+    //void on_pushButton_clicked();
 
     void playMusic();
     void stopMusic();
@@ -71,13 +71,13 @@ private slots:
 
     //void on_slderOfMusicTime_sliderMoved(int position);
 
-    void on_sliderOfMusicTime_sliderMoved(int position);
+    //void on_sliderOfMusicTime_sliderMoved(int position);
 
     //void on_musicSlider_sliderMoved(qint64 position);
 
 
-     void durationChanged(qint64 duration);
-     void positionChanged(qint64 progress);
+     void onDurationChanged(qint64 duration);
+     void onPositionChanged(qint64 progress);
      void seek(int mseconds);
 
     void setSliderPosition(qint64 position);
