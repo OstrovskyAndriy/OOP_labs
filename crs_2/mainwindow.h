@@ -4,13 +4,8 @@
 #include <QMainWindow>
 #include <QMessageBox>
 
-#include <QSqlDatabase> // бібліотека бази даних
-#include <QDebug> //бібліотека для відладки програми
-#include <QSqlQuery> // бібліотека для запиту до баз даних
 #include <QSqlTableModel> // для відображення таблиць
 #include <QTableView>
-#include <QtSql>
-
 
 #include <QStringList>
 #include <QFileDialog>
@@ -25,6 +20,8 @@
 
 #include <QTime>
 
+
+#include "dbmanager.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -69,12 +66,6 @@ private slots:
     void vievOfTable();
     void changeStateOfPauseButton();
 
-    //void on_slderOfMusicTime_sliderMoved(int position);
-
-    //void on_sliderOfMusicTime_sliderMoved(int position);
-
-    //void on_musicSlider_sliderMoved(qint64 position);
-
 
      void onDurationChanged(qint64 duration);
      void onPositionChanged(qint64 progress);
@@ -86,10 +77,9 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    QSqlDatabase db;
-    QSqlQuery *query;
     QSqlTableModel *model;
-    //QTableView *viev;
+
+    DBManager dbManager;
 
     QMediaPlayer *player;
     QAudioOutput *audioOutput;

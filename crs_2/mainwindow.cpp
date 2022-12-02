@@ -6,49 +6,31 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     ui->tableViewAudio->setSelectionMode(QAbstractItemView::NoSelection);
     ui->tableViewAudio->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     connect(ui->playAndStopSong, &QPushButton::clicked,this, &MainWindow::playMusic);
     connect(ui->musicSlider, &QSlider::sliderMoved, this, &MainWindow::seek);
 
+    dbManager.createDB();
 
-    db=QSqlDatabase::addDatabase("QSQLITE"); // драйвер sqlite
-    db.setDatabaseName("./audioDB.sqlite"); // добавити базу даних в папку проекту
+    model =new QSqlTableModel(this,dbManager.returnDB());
 
-    if(db.open()){          // перевірка чи відкриється база даних
-        qDebug("open");     // якщо відкривається в консоль виводим open, якщо ні відповідно no open
-    }
-    else{
-        qDebug("no open");
-        qDebug() << QSqlDatabase::drivers();
-    }
+    model->setTable(dbManager.getDBName());
 
-
-    QString queryToCreateTable = "CREATE TABLE audioList ("
-                                 "music_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "
-                                 "path VARCHAR(100) NOT NULL,"
-                                 "song_name VARCHAR(100) NOT NULL); ";
-    query = new QSqlQuery;
-
-    if(!query->exec(queryToCreateTable)){
-        qDebug()<<"error creatig table";
-    }
-
-
-
-    model =new QSqlTableModel(this,db);
-    model->setTable("audioList");
 
     vievOfTable();
 
-    qDebug("create table");
+    //qDebug("create table");
 
 
     player = new QMediaPlayer(this);
     audioOutput = new QAudioOutput;
 
     connect(player,&QMediaPlayer::positionChanged,this,&MainWindow::onPositionChanged);
+    //connect(player,&QMediaPlayer::,this,&MainWindow::on_nextSong_clicked);
+
 
     //регулювання гучності
     ui->volumeSlider->setSliderPosition(50);
@@ -61,7 +43,7 @@ MainWindow::~MainWindow()
 {
     delete ui;
     delete model;
-    delete query;
+    //delete query;
     delete player;
     //delete viev;
 
@@ -73,13 +55,16 @@ void MainWindow::on_Add_clicked()
 
     QString file = QFileDialog::getOpenFileName(this,tr("Open files"),QString(),tr("Audio Files (*.mp3)")); //шлях до файлу
 
+    if(file==""){
+        return;
+    }
+
 
     QFileInfo info(file);
     QString fileName = info.fileName(); //отримати назву файлу
     QString newFilePath;
 
     ui->song_name->setText(fileName);
-
 
 
     if(QDir("music").exists()){     //перевіряю чи є папка musiс, якщо є то копіюю файл
@@ -94,53 +79,35 @@ void MainWindow::on_Add_clicked()
 
     }
 
-    query->prepare("INSERT INTO audioList("
-                   "path, "
-                   "song_name)"
-                   "VALUES(?,?);");
 
-    query->addBindValue(newFilePath);
-    query->addBindValue(fileName);
-
-    if(!query->exec()){
-        //qDebug("error entering data");
+    if(!dbManager.insert(newFilePath,fileName)){
         errorMsg.setText("Error entering data");
         errorMsg.exec();
-
     }
 
     else{
         player->setAudioOutput(audioOutput);
         player->setSource(QUrl::fromLocalFile(newFilePath));
 
-        //нууу час я отримав але не так як треба спершу повертає 0 і на наступний раз вже довжину
-        /*QTime time=QTime::fromMSecsSinceStartOfDay(player->duration());
-            qDebug()<<time.toString("mm:ss");*/
-
-        player->play();
+        this->playMusic();
     }
     vievOfTable();
 
     songIndex=ui->tableViewAudio->model()->columnCount();
+    rowToDelete=songIndex;
 
 
-
-    ui->playAndStopSong->setText("Pause");
-    // дві наступні стрічки коду для того щоб не був баг, коли музика на паузі і додаєм музику
-
-    connect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::stopMusic);
-    disconnect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::playMusic);
-
-    //ui->musicSlider->setRange(0,player->duration());
-
+    qDebug()<<songIndex<<" song index";
+    qDebug()<<rowToDelete<<"row to delete";
 
 }
 
 
 void MainWindow::playMusic()
-{
+{  
     //перемотування музики
     ui->musicSlider->setRange(0,player->duration());
+
 
     ui->playAndStopSong->setText("Pause");
     player->play();
@@ -209,21 +176,10 @@ void MainWindow::on_tableViewAudio_doubleClicked(const QModelIndex &index)
         player->setSource(QUrl::fromLocalFile(url));
 
         this->playMusic();
-//        player->play();
 
-        //    // дві наступні стрічки коду для того щоб не був баг, коли музика на паузі і даблклікаєм іншу музику
-        //    connect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::stopMusic);
-        //    ui->playAndStopSong->setText("Pause");
-        //    disconnect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::playMusic);
-
-
-
-        //    ui->musicSlider->setRange(0,player->duration());
     }
 
 }
-
-
 
 
 void MainWindow::on_nextSong_clicked()
@@ -234,17 +190,23 @@ void MainWindow::on_nextSong_clicked()
         songIndex=0;
     }
 
+    rowToDelete=songIndex;
+
+
     url=ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(songIndex,1)).toString();
     songName =ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(songIndex,2)).toString();
     ui->song_name->setText(songName);
 
     player->setAudioOutput(audioOutput);
     player->setSource(QUrl::fromLocalFile(url));
-    player->play();
+
+    this->playMusic();
+
+    /*player->play();
 
     ui->playAndStopSong->setText("Pause");
     connect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::stopMusic);
-    disconnect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::playMusic);
+    disconnect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::playMusic);*/
 
 }
 
@@ -256,6 +218,8 @@ void MainWindow::on_prevSong_clicked()
     }
     songIndex--;
 
+    rowToDelete=songIndex;
+
 
     url=ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(songIndex,1)).toString();
     songName =ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(songIndex,2)).toString();
@@ -264,11 +228,13 @@ void MainWindow::on_prevSong_clicked()
 
     player->setAudioOutput(audioOutput);
     player->setSource(QUrl::fromLocalFile(url));
-    player->play();
 
-    ui->playAndStopSong->setText("Pause");
-    connect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::stopMusic);
-    disconnect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::playMusic);
+    this->playMusic();
+//    player->play();
+
+//    ui->playAndStopSong->setText("Pause");
+//    connect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::stopMusic);
+//    disconnect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::playMusic);
 }
 
 
@@ -289,6 +255,7 @@ void MainWindow::on_closeWindow_clicked()
 
 void MainWindow::on_tableViewAudio_clicked(const QModelIndex &index)
 {
+
     rowToDelete=index.row();
 }
 
@@ -298,8 +265,8 @@ void MainWindow::on_deleteButton_clicked()
     ui->tableViewAudio->model()->removeRow(rowToDelete);
     vievOfTable();
 
-    //qDebug()<<songIndex;
-    //qDebug()<<rowToDelete;
+    qDebug()<<songIndex<<" song_index";
+    qDebug()<<rowToDelete<<" row to delete";
 
     if(songIndex==rowToDelete){
         player->stop();
