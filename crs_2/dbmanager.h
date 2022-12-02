@@ -5,8 +5,8 @@
 #include <QSqlDatabase> // бібліотека бази даних
 #include <QDebug> //бібліотека для відладки програми
 #include <QSqlQuery> // бібліотека для запиту до баз даних
-#include <QSqlTableModel> // для відображення таблиць
-#include <QTableView>
+//#include <QSqlTableModel> // для відображення таблиць
+//#include <QTableView>
 #include <QtSql>
 
 
@@ -14,10 +14,10 @@ class DBManager
 {
     QSqlDatabase db;
     QSqlQuery *query;
-//    QSqlTableModel *model;
 
 public:
     DBManager();
+    ~DBManager();
 
     void createDB();
 

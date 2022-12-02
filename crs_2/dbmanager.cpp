@@ -5,6 +5,11 @@ DBManager::DBManager()
 
 }
 
+DBManager::~DBManager()
+{
+    delete query;
+}
+
 void DBManager::createDB()
 {
     db=QSqlDatabase::addDatabase("QSQLITE"); // драйвер sqlite
@@ -42,6 +47,7 @@ QSqlDatabase DBManager::returnDB()
 {
     return db;
 }
+
 
 bool DBManager::insert(QString &songUrl, QString &song_name) const
 {

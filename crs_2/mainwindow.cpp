@@ -95,11 +95,6 @@ void MainWindow::on_Add_clicked()
 
     songIndex=ui->tableViewAudio->model()->columnCount();
     rowToDelete=songIndex;
-
-
-    qDebug()<<songIndex<<" song index";
-    qDebug()<<rowToDelete<<"row to delete";
-
 }
 
 
@@ -156,6 +151,7 @@ void MainWindow::on_tableViewAudio_doubleClicked(const QModelIndex &index)
     url=ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(index.row(),1)).toString();
     songName =ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(index.row(),2)).toString();
     songIndex = index.row();
+    rowToDelete=songIndex;
 
     //перевірка чи файл дійсний
     //якщо не дійсний то видалити з бази даних
@@ -179,6 +175,9 @@ void MainWindow::on_tableViewAudio_doubleClicked(const QModelIndex &index)
 
     }
 
+
+    //qDebug()<<player->duration();
+
 }
 
 
@@ -190,8 +189,9 @@ void MainWindow::on_nextSong_clicked()
         songIndex=0;
     }
 
-    rowToDelete=songIndex;
 
+
+    rowToDelete=songIndex;
 
     url=ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(songIndex,1)).toString();
     songName =ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(songIndex,2)).toString();
@@ -213,13 +213,13 @@ void MainWindow::on_nextSong_clicked()
 
 void MainWindow::on_prevSong_clicked()
 {
-    if(songIndex==0){
-        songIndex=ui->tableViewAudio->model()->rowCount();
-    }
     songIndex--;
+    if(songIndex==-1){
+        songIndex=ui->tableViewAudio->model()->rowCount()-1;
+    }
+
 
     rowToDelete=songIndex;
-
 
     url=ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(songIndex,1)).toString();
     songName =ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(songIndex,2)).toString();
@@ -265,18 +265,17 @@ void MainWindow::on_deleteButton_clicked()
     ui->tableViewAudio->model()->removeRow(rowToDelete);
     vievOfTable();
 
-    qDebug()<<songIndex<<" song_index";
-    qDebug()<<rowToDelete<<" row to delete";
-
     if(songIndex==rowToDelete){
         player->stop();
     }
+
+    rowToDelete=songIndex--;
 }
 
 void MainWindow::vievOfTable()
 {
+    model->setTable(dbManager.getDBName());
     model->select();
-
     ui->tableViewAudio->setModel(model);
     ui->tableViewAudio->hideColumn(0);
     ui->tableViewAudio->hideColumn(1);
