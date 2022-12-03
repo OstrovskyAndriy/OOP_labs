@@ -201,13 +201,6 @@ void MainWindow::on_nextSong_clicked()
     player->setSource(QUrl::fromLocalFile(url));
 
     this->playMusic();
-
-    /*player->play();
-
-    ui->playAndStopSong->setText("Pause");
-    connect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::stopMusic);
-    disconnect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::playMusic);*/
-
 }
 
 
@@ -230,11 +223,6 @@ void MainWindow::on_prevSong_clicked()
     player->setSource(QUrl::fromLocalFile(url));
 
     this->playMusic();
-//    player->play();
-
-//    ui->playAndStopSong->setText("Pause");
-//    connect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::stopMusic);
-//    disconnect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::playMusic);
 }
 
 
@@ -242,8 +230,6 @@ void MainWindow::on_offMusic_clicked()
 {
     player->stop();
 }
-
-
 
 
 
@@ -268,8 +254,15 @@ void MainWindow::on_deleteButton_clicked()
     if(songIndex==rowToDelete){
         player->stop();
     }
+    qDebug()<<rowToDelete;
 
-    rowToDelete=songIndex--;
+    if(rowToDelete==0){
+        rowToDelete=songIndex=ui->tableViewAudio->model()->rowCount()-1;
+    }
+
+    if(rowToDelete==ui->tableViewAudio->model()->rowCount()){
+        rowToDelete=songIndex=-1;
+    }
 }
 
 void MainWindow::vievOfTable()
