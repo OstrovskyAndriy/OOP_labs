@@ -41,8 +41,6 @@ private slots:
 
     void on_tableViewAudio_doubleClicked(const QModelIndex &index);
 
-    //void on_pushButton_clicked();
-
     void playMusic();
     void stopMusic();
 
@@ -64,12 +62,10 @@ private slots:
     void on_deleteButton_clicked();
 
     void vievOfTable();
-    void changeStateOfPauseButton();
 
-
-     void onDurationChanged(qint64 duration);
-     void onPositionChanged(qint64 progress);
-     void seek(int mseconds);
+    void onDurationChanged(qint64 duration);
+    void onPositionChanged(qint64 progress);
+    void seek(int mseconds);
 
     void setSliderPosition(qint64 position);
 

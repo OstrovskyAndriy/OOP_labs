@@ -13,11 +13,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->playAndStopSong, &QPushButton::clicked,this, &MainWindow::playMusic);
     connect(ui->musicSlider, &QSlider::sliderMoved, this, &MainWindow::seek);
 
-    dbManager.createDB();
+    dbManager.createAudioDB();
 
-    model =new QSqlTableModel(this,dbManager.returnDB());
+    model =new QSqlTableModel(this,dbManager.returnAudioDB());
 
-    model->setTable(dbManager.getDBName());
+    model->setTable(dbManager.getAudioTableName());
 
 
     vievOfTable();
@@ -31,7 +31,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(player,&QMediaPlayer::positionChanged,this,&MainWindow::onPositionChanged);
     //connect(player,&QMediaPlayer::,this,&MainWindow::on_nextSong_clicked);
 
-
     //регулювання гучності
     ui->volumeSlider->setSliderPosition(50);
     ui->volumeSlider->setRange(0,100);
@@ -43,22 +42,17 @@ MainWindow::~MainWindow()
 {
     delete ui;
     delete model;
-    //delete query;
     delete player;
-    //delete viev;
-
 }
 
 
 void MainWindow::on_Add_clicked()
 {
-
     QString file = QFileDialog::getOpenFileName(this,tr("Open files"),QString(),tr("Audio Files (*.mp3)")); //шлях до файлу
 
     if(file==""){
         return;
     }
-
 
     QFileInfo info(file);
     QString fileName = info.fileName(); //отримати назву файлу
@@ -103,7 +97,6 @@ void MainWindow::playMusic()
     //перемотування музики
     ui->musicSlider->setRange(0,player->duration());
 
-
     ui->playAndStopSong->setText("Pause");
     player->play();
 
@@ -122,29 +115,21 @@ void MainWindow::stopMusic()
 }
 
 
-
 void MainWindow::on_volumeSlider_sliderMoved()  // виконуєтсья лише коли регулятор пересувати
 {
     qreal linearVolume =  QAudio::convertVolume(ui->volumeSlider->value() / qreal(100),
                                                 QAudio::LogarithmicVolumeScale,
                                                 QAudio::LinearVolumeScale);
     audioOutput->setVolume(linearVolume);
-
-
 }
-
 
 void MainWindow::on_volumeSlider_valueChanged() // виконуєтсья лише коли клацнути по регулятору гучності
 {
-
     qreal linearVolume =  QAudio::convertVolume(ui->volumeSlider->value() / qreal(100),
                                                 QAudio::LogarithmicVolumeScale,
                                                 QAudio::LinearVolumeScale);
     audioOutput->setVolume(linearVolume);
-
 }
-
-
 
 void MainWindow::on_tableViewAudio_doubleClicked(const QModelIndex &index)
 {
@@ -174,10 +159,6 @@ void MainWindow::on_tableViewAudio_doubleClicked(const QModelIndex &index)
         this->playMusic();
 
     }
-
-
-    //qDebug()<<player->duration();
-
 }
 
 
@@ -188,8 +169,6 @@ void MainWindow::on_nextSong_clicked()
     if(songIndex==ui->tableViewAudio->model()->rowCount()){
         songIndex=0;
     }
-
-
 
     rowToDelete=songIndex;
 
@@ -211,13 +190,11 @@ void MainWindow::on_prevSong_clicked()
         songIndex=ui->tableViewAudio->model()->rowCount()-1;
     }
 
-
     rowToDelete=songIndex;
 
     url=ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(songIndex,1)).toString();
     songName =ui->tableViewAudio->model()->data(ui->tableViewAudio->model()->index(songIndex,2)).toString();
     ui->song_name->setText(songName);
-
 
     player->setAudioOutput(audioOutput);
     player->setSource(QUrl::fromLocalFile(url));
@@ -241,7 +218,6 @@ void MainWindow::on_closeWindow_clicked()
 
 void MainWindow::on_tableViewAudio_clicked(const QModelIndex &index)
 {
-
     rowToDelete=index.row();
 }
 
@@ -267,7 +243,7 @@ void MainWindow::on_deleteButton_clicked()
 
 void MainWindow::vievOfTable()
 {
-    model->setTable(dbManager.getDBName());
+    model->setTable(dbManager.getAudioTableName());
     model->select();
     ui->tableViewAudio->setModel(model);
     ui->tableViewAudio->hideColumn(0);
@@ -275,32 +251,16 @@ void MainWindow::vievOfTable()
     ui->tableViewAudio->setColumnWidth(2,ui->tableViewAudio->width());
 }
 
-// не дороблено
-void MainWindow::changeStateOfPauseButton()
-{
-    ui->playAndStopSong->setText("Pause");
-    // дві наступні стрічки коду для того щоб не був баг, коли музика на паузі і додаєм музику
-    connect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::stopMusic);
-    disconnect(ui->playAndStopSong, &QPushButton::clicked, this, &MainWindow::playMusic);
-}
-
-
-
-
 
 void MainWindow::seek(int mseconds)
 {
     player->setPosition(mseconds);
 }
 
-
-
 void MainWindow::setSliderPosition(qint64 position)
 {
     qDebug()<< position;
-    //ui->musicSlider->setSliderPosition(position);
 }
-
 
 
 void MainWindow::onDurationChanged(qint64 duration)
@@ -317,29 +277,8 @@ void MainWindow::onPositionChanged(qint64 progress)
     updateDurationInfo(progress / 1000);
 }
 
-
-
-
-
 void MainWindow::updateDurationInfo(qint64 currentInfo)
 {
-//    QString tStr;
-//    if (currentInfo || m_duration) {
-//        QTime currentTime((currentInfo / 3600) % 60, (currentInfo / 60) % 60,
-//                          currentInfo % 60, (currentInfo * 1000) % 1000);
-//        QTime totalTime((m_duration / 3600) % 60, (m_duration / 60) % 60,
-//                        m_duration % 60, (m_duration * 1000) % 1000);
-//        QString format = "mm:ss";
-////        if (m_duration > 3600)
-////            format = "mm:ss";
-
-//        QTime time=QTime::fromMSecsSinceStartOfDay(player->duration());
-//        //qDebug()<<time.toString("mm:ss");
-
-//        tStr = currentTime.toString(format) + " / " + totalTime.toString(time.toString("mm:ss"));
-//    }
-//    ui->songTime->setText(tStr);
-
     QString tStr;
     if (currentInfo || m_duration) {
         QTime currentTime((currentInfo / 3600) % 60, (currentInfo / 60) % 60,
@@ -356,6 +295,4 @@ void MainWindow::updateDurationInfo(qint64 currentInfo)
         tStr = currentTime.toString(format) + " / " + totalTime.toString(time.toString("mm:ss"));
     }
     ui->songTime->setText(tStr);
-
 }
-

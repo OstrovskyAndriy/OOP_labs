@@ -19,11 +19,11 @@ public:
     DBManager();
     ~DBManager();
 
-    void createDB();
+    void createAudioDB();
 
-    QString getDBName();
+    QString getAudioTableName();
 
-    QSqlDatabase returnDB();
+    QSqlDatabase returnAudioDB();
 
     bool insert(QString &songUrl,QString &song_name) const;
 };

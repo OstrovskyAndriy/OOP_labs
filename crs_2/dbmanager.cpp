@@ -10,7 +10,7 @@ DBManager::~DBManager()
     delete query;
 }
 
-void DBManager::createDB()
+void DBManager::createAudioDB()
 {
     db=QSqlDatabase::addDatabase("QSQLITE"); // драйвер sqlite
     db.setDatabaseName("./audioDB.sqlite"); // добавити базу даних в папку проекту
@@ -38,12 +38,12 @@ void DBManager::createDB()
 
 }
 
-QString DBManager::getDBName()
+QString DBManager::getAudioTableName()
 {
     return "audioList";
 }
 
-QSqlDatabase DBManager::returnDB()
+QSqlDatabase DBManager::returnAudioDB()
 {
     return db;
 }
