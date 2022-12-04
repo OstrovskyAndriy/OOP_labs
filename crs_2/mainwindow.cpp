@@ -85,6 +85,7 @@ void MainWindow::on_Add_clicked()
 
         this->playMusic();
     }
+
     vievOfTable();
 
     songIndex=ui->tableViewAudio->model()->columnCount();
